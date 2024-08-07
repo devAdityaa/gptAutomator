@@ -1,0 +1,26 @@
+{
+    "manifest_version": 3,
+    "name": "GPT Automator",
+    "version": "1.0",
+    "description": "A simple Chrome extension fetch OpenAI Queries from Web UI and store it to Postgres DB",
+    "permissions": [
+      "storage",
+      "activeTab",
+      "scripting",
+      "tabs"
+    ],
+    "background": {
+      "service_worker": "background.js"
+    },
+    "content_scripts": [
+      {
+        "matches": ["<all_urls>"],
+        "js": ["content.js"]
+      }
+    ],
+    "action": {
+      "default_popup": "popup.html",
+      "default_title": "Open the popup"
+    }
+  }
+  
