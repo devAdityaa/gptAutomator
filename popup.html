@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <img src="cgpLogo.svg" alt="logo">
+            </div>
+        </header>
+        <main>
+            <button class='glowing-btn start-btn'><span class='glowing-txt' ><span class="start-btn-letter-1">S</span><span class='faulty-letter start-btn-letter-2'>T</span><span class="start-btn-letter-3">ART</span></button>
+
+            <div class="switch continuous">
+                <label class="leftInput">
+                    <input type="checkbox" hidden id="cnt">
+                <div class="switch__wrapper">
+                    <div class="switch__toggle"></div>
+                </div>
+                <h4 class="label_text">Continuous</h4>
+            </label>
+                <div class="rightInput">
+                    <input type="number" value="1" id="indexValue" placeholder="Start Index">
+                    <h4 class="label_text">Start Index</h4>
+                </div>
+            </div>
+        </main>
+    
+            
+        <footer>
+            <div class="terminal">
+                <h4>GPT Automator logs:></h4>
+                <p>#Welcome to ChatGpt Automator</p>
+              
+            </div>
+        </footer>
+    </div>
+    <script src="popup.js"></script>
+</body>
+</html>

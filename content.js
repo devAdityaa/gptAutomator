@@ -1,11 +1,7 @@
-console.log("Content script loaded");
-
-// Function to handle the response and modify it
 async function modifyResponse(response, callback) {
     try {
         const resArr = response.split('data: ');
         let textResponse = "";
-
         for (let i = 0; i < resArr.length; i++) {
             let s = resArr[i].trim();
             if (s.includes("in_progress")) {
@@ -16,8 +12,8 @@ async function modifyResponse(response, callback) {
                 textResponse = js.message.content.parts.join(""); // Convert array to string
             }
         }
-        callback({ text: textResponse  })
-        // Call sendFunction with the modified response
+        console.log(textResponse)
+        callback({ text: textResponse });
         return response; // Return original response if needed
     } catch (e) {
         console.log(e);
@@ -25,19 +21,10 @@ async function modifyResponse(response, callback) {
     }
 }
 
-
-
-
-
-
-
-
-
-// Function to intercept and modify fetch requests
-function interceptAndModifyRequest(callback,query) {
+function interceptAndModifyRequest(callback, query) {
     const originalFetch = window.fetch;
-
-    window.fetch = function (input, init) {
+    window.fetch = function(input, init) {
+        console.log("FETCH", input)
         if (typeof input === 'string' && input === "https://chatgpt.com/backend-api/conversation") {
             console.log("Intercepting request:", input);
             return originalFetch.apply(this, arguments).then(response => {
@@ -47,7 +34,7 @@ function interceptAndModifyRequest(callback,query) {
                         return new Response(modifiedText, {
                             status: response.status,
                             statusText: response.statusText,
-                            headers: response.headers,
+                            headers: response.headers
                         });
                     });
                 }
@@ -60,38 +47,34 @@ function interceptAndModifyRequest(callback,query) {
     initiateRequest(query);
 }
 
-// Function to initiate request by simulating user input
 function initiateRequest(text) {
     const form = document.querySelector('form');
     const inputField = form.querySelector('textarea');
 
-    // Function to handle the input event
     function handleInput() {
         inputField.value = text;
-        // Trigger the input event
         inputField.dispatchEvent(new Event('input', { bubbles: true }));
     }
 
-    // Set the value and trigger the input event
     handleInput();
-    setTimeout(()=>{
+    setTimeout(() => {
         const button = form.querySelector('button[data-testid]');
         button.click();
-    },3000)
-    
-   
+    }, 3000);
 }
 
-// Listener for messages from background script
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    console.log("Content script received a message:", message);
-    if (message.text) {
+// Function to send responses back to the helper script
+function sendResponse(res) {
+    window.postMessage({ from: "isolatedScript", ...res }, "*");
+}
 
-            interceptAndModifyRequest(
-                sendResponse, message.text
-            );
-            
-       
+// Listen for messages from the helper script
+window.addEventListener("message", (event) => {
+    // Ensure the message is from the helper script
+    if (event.data.from === "helperScript") {
+        console.log("Message received from helper script:", event.data);
+        interceptAndModifyRequest(sendResponse, event.data.text);
     }
-    return true; // Required for async sendResponse
 });
+
+console.log('Isolated script injected and ready');
