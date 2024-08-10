@@ -389,6 +389,7 @@ main .startBtn:before{
             font-family: 'Raleway';
             margin-top: 10px;
             text-decoration: underline;
+            text-align: center;
           }
           @keyframes checked__wrapper {
             0%, 45%, 100% {
