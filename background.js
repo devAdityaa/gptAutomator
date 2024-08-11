@@ -1,8 +1,8 @@
 // Constants
 const PROMPTS = ["Prompt 1", "Prompt 2", "Prompt 3"];
-const API_URL_INFO = 'http://localhost:3000/api/data/fetch/info';
-const API_URL_PROMPT = 'http://localhost:3000/api/data/fetch/prompt';
-const API_URL_POST = 'http://localhost:3000/api/data/update/promptResponse'
+const API_URL_INFO = 'http://localhost:3003/api/data/fetch/info';
+const API_URL_PROMPT = 'http://localhost:3003/api/data/fetch/prompt';
+const API_URL_POST = 'http://localhost:3003/api/data/update/promptResponse'
 const RESPONSE_DELAY = 5000;  // Delay for asynchronous responses
 
 // Function to handle tab updates
