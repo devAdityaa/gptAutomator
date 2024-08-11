@@ -16,7 +16,7 @@ const COLORS = {
 function logToTerminal(message) {
     const terminal = document.querySelector('.terminal');
     const messageContainer = document.createElement('p');
-    messageContainer.innerText = `#${message}`;
+    messageContainer.innerHTML = `<span style="color:green;display:inline;margin:0;padding:0;">#</span>${message}`;
     terminal.appendChild(messageContainer);
 }
 
@@ -81,8 +81,8 @@ async function sendMessage(processCode) {
             return 0;
         }
     } catch (error) {
-        logToTerminal('Error occurred');
-        console.error("Error sending message:", error);
+        logToTerminal(`Error occurred: ${error.message}`);
+        console.log("Error sending message:", error);
         return 0;
     }
 }
@@ -108,8 +108,9 @@ async function sendIndex(id,isContinuous) {
             return 0;
         }
     } catch (error) {
-        logToTerminal('Error occurred');
-        console.error("Error:", error);
+        logToTerminal(`Error occurred: ${error.message}`);
+        logToTerminal("Troubleshoot: \n1. Check if you are not on chat gpt page, if not go to chatgpt web page.\n2.Refresh Chat GPT page if you're already on it")
+        console.log("Error:", error);
         return 0;
     }
 }
