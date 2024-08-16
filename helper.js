@@ -79,18 +79,30 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
                     });
     
                     // Log the fetched prompt
-                    chrome.runtime.sendMessage({
-                        type: 'logMessage',
-                        message: `Prompt Fetched From Database for index: ${i}`
-                    });
+                
+                    
     
                     // Post the prompt to the window
-                    window.postMessage({ from: "helperScript", p_id: promptObj.promptObj.promptId, text: promptObj.promptObj.prompt }, "*");
+                    if(promptObj.promptObj.prompt){
+                        chrome.runtime.sendMessage({
+                            type: 'logMessage',
+                            message: `Prompt Fetched From Database for index: ${i}`
+                        });
+                        window.postMessage({ from: "helperScript", p_id: promptObj.promptObj.promptId, text: promptObj.promptObj.prompt }, "*");
     
-                    // Wait for the response from the isolated content script
-                    await waitForResponse();
-    
-                    // Stop the loop if shouldContinue is 0
+                        // Wait for the response from the isolated content script
+                        await waitForResponse();
+        
+                        // Stop the loop if shouldContinue is 0
+                    }
+                    else
+                    chrome.runtime.sendMessage({
+                        type: 'logMessage',
+                        message: `Skipping Index ${i}, prompt not found or process already running in another instance...`,
+                        color:'yellow'
+
+                    });
+                       
                     if (!window.shouldContinue) break;
     
                 } catch (error) {

@@ -12,12 +12,26 @@ const COLORS = {
     END_PROCESS: 'hsl(7, 100%, 69%)',
     START_PROCESS: 'hsl(159, 100%, 69%)'
 };
+function scrollTerminal() {
+    const element = document.querySelector('.terminal');
+    if (element) {
+        element.scrollTop = element.scrollHeight;
+    } else {
+    }
+}
 
-function logToTerminal(message) {
+
+function logToTerminal(message, color = "white") {
     const terminal = document.querySelector('.terminal');
-    const messageContainer = document.createElement('p');
-    messageContainer.innerHTML = `<span style="color:green;display:inline;margin:0;padding:0;">#</span>${message}`;
-    terminal.appendChild(messageContainer);
+    const lines = message.split('\n');
+    lines.forEach(line => {
+        const messageContainer = document.createElement('p');
+        messageContainer.style.color = color;
+        messageContainer.innerHTML = `<span style="color:green;display:inline;margin:0;padding:0; margin-right:5px;">#</span>${line}`;
+        terminal.appendChild(messageContainer);
+        scrollTerminal();
+    });
+    
 }
 
 function changeBtnState(state) {
@@ -77,11 +91,11 @@ async function sendMessage(processCode) {
         } else if (processCode === '2') {
             await stopProcess();
         } else {
-            logToTerminal(`Couldn't ${processCode === '1' ? 'connect to server' : 'end process'}...`);
+            logToTerminal(`Couldn't ${processCode === '1' ? 'connect to server' : 'end process'}...`, "red");
             return 0;
         }
     } catch (error) {
-        logToTerminal(`Error occurred: ${error.message}`);
+        logToTerminal(`Error occurred: ${error.message}`, "red");
         console.log("Error sending message:", error);
         return 0;
     }
@@ -91,7 +105,7 @@ async function stopProcess() {
     const tabId = await getActiveTabId();
     if (tabId) {
         await chrome.tabs.sendMessage(tabId, { type: "changeRunState", state: 0 });
-        logToTerminal("Process stopped... Thanks for using!");
+        logToTerminal("Process stopped... Thanks for using!","green");
     }
 }
 
@@ -104,12 +118,12 @@ async function sendIndex(id,isContinuous) {
             if (!res) throw new Error("Can't communicate with helper script");
             return 1;
         } else {
-            logToTerminal("No active tabs found");
+            logToTerminal("No active tabs found","orange");
             return 0;
         }
     } catch (error) {
-        logToTerminal(`Error occurred: ${error.message}`);
-        logToTerminal("Troubleshoot: \n1. Check if you are not on chat gpt page, if not go to chatgpt web page.\n2.Refresh Chat GPT page if you're already on it")
+        logToTerminal(`Error occurred: ${error.message}`,"red");
+        logToTerminal("Troubleshoot: \n1. Check if you are not on chat gpt page, if not go to chatgpt web page.\n2.Refresh Chat GPT page if you're already on it","orange")
         console.log("Error:", error);
         return 0;
     }
@@ -151,11 +165,11 @@ startBtn.addEventListener('click', async () => {
 isContinuous.addEventListener('click',(e)=>{
     if( e.target.checked){
         const continuousLabelText = document.querySelector('.rightInput .label_text')
-        continuousLabelText.innerText = 'Max Amount';
+        //continuousLabelText.innerText = 'Max Amount';
     }
     else{
         const continuousLabelText = document.querySelector('.rightInput .label_text')
-        continuousLabelText.innerText = 'Index';
+        //continuousLabelText.innerText = 'Index';
     }
     
 
@@ -163,10 +177,10 @@ isContinuous.addEventListener('click',(e)=>{
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     switch (request.type) {
         case "logMessage":
-            logToTerminal(request.message);
+            logToTerminal(request.message, request.color? request.color: 'white');
             break;
         case "completed":
-            logToTerminal("Process Completed Successfully!");
+            logToTerminal("Process Completed Successfully!", "green");
             changeBtnState(0);
             break;
         case "isActive":
