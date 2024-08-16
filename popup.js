@@ -165,11 +165,11 @@ startBtn.addEventListener('click', async () => {
 isContinuous.addEventListener('click',(e)=>{
     if( e.target.checked){
         const continuousLabelText = document.querySelector('.rightInput .label_text')
-        //continuousLabelText.innerText = 'Max Amount';
+        continuousLabelText.innerText = 'Max Amount';
     }
     else{
         const continuousLabelText = document.querySelector('.rightInput .label_text')
-        //continuousLabelText.innerText = 'Index';
+        continuousLabelText.innerText = 'Index';
     }
     
 

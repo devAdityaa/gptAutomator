@@ -106,6 +106,12 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
                     if (!window.shouldContinue) break;
     
                 } catch (error) {
+                    chrome.runtime.sendMessage({
+                        type: 'logMessage',
+                        message: `Error Occured for Index ${i}: ${error.message}`,
+                        color:'red'
+
+                    });
                     console.error("Error processing prompt:", error);
                 }
             }
@@ -124,23 +130,38 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
                 const promptObj = await new Promise((resolve) => {
                     chrome.runtime.sendMessage({ type: 'getPrompt', index: startIndex }, resolve);
                 });
+                if(promptObj.promptObj.prompt){
+                    chrome.runtime.sendMessage({
+                        type: 'logMessage',
+                        message: `Prompt Fetched From Database for index: ${startIndex}`
+                    });
+    
+                    // Post the prompt to the window
+                    window.postMessage({ from: "helperScript", p_id: promptObj.promptObj.promptId, text: promptObj.promptObj.prompt }, "*");
+    
+                    // Wait for the response from the isolated content script
+                    await waitForResponse();
+                }
+                else
+                    chrome.runtime.sendMessage({
+                        type: 'logMessage',
+                        message: `Skipping Index ${startIndex}, prompt not found or process already running in another instance...`,
+                        color:'yellow'
 
+                    });
                 // Log the fetched prompt
-                chrome.runtime.sendMessage({
-                    type: 'logMessage',
-                    message: `Prompt Fetched From Database for index: ${startIndex}`
-                });
-
-                // Post the prompt to the window
-                window.postMessage({ from: "helperScript", p_id: promptObj.promptObj.promptId, text: promptObj.promptObj.prompt }, "*");
-
-                // Wait for the response from the isolated content script
-                await waitForResponse();
+                
 
                 // Stop the loop if shouldContinue is 0
                 if (!window.shouldContinue) return;
 
             } catch (error) {
+                chrome.runtime.sendMessage({
+                    type: 'logMessage',
+                    message: `Error Occured for Index ${startIndex}: ${error.message}`,
+                    color:'red'
+
+                });
                 console.error("Error processing prompt:", error);
             }
         }
